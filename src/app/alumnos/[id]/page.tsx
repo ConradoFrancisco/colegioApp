@@ -3,9 +3,10 @@
 import { Card, Container, Row, Col, Accordion, Table } from "react-bootstrap";
 import AlumnoEditModal from "./components/EditarAlumnoModal";
 import { useState } from "react";
+import FamiliarModal from "./components/FamiliarModal";
 
 interface IFamiliar {
-  fecha_nacimiento: string;
+  fechaNac: string;
   id: number;
   nombre: string;
   apellido: string;
@@ -61,7 +62,7 @@ const alumno: IAlumno = {
       dni: "34567890",
       telefono: "1122334455",
       parentesco: "Madre",
-      fecha_nacimiento: "1985-10-20",
+      fechaNac: "1985-10-20",
     },
     {
       id: 2,
@@ -70,7 +71,7 @@ const alumno: IAlumno = {
       dni: "34567891",
       telefono: "1122334466",
       parentesco: "Padre",
-      fecha_nacimiento: "1980-05-15",
+      fechaNac: "1980-05-15",
     },
   ],
   actividades: [
@@ -102,10 +103,32 @@ const alumno: IAlumno = {
 export default function AlumnoDetailPage() {
   // Simulación de un alumno
   const [showModal, setShowModal] = useState(false);
-
+  const [showFamiliarModal, setShowFamiliarModal] = useState(false);
+  const [selectedFamiliar, setSelectedFamiliar] = useState<IFamiliar | null>( {
+    id: 1,
+    nombre: "Laura",
+    apellido: "Gómez",
+    dni: "34567890",
+    telefono: "1122334455",
+    parentesco: "Madre",
+    fechaNac: "1985-10-20",
+  },);
+  
+  // Funciones para abrir modal
+  const handleAddFamiliar = () => {
+    setSelectedFamiliar(null); // nuevo
+    setShowFamiliarModal(true);
+  };
+  
+  const handleEditFamiliar = (familiar: IFamiliar) => {
+    setSelectedFamiliar({
+      ...familiar,
+    });
+    setShowFamiliarModal(true);
+  };
   return (
     <>
-      <Container className="my-4">
+      <Container fluid className="my-4">
         <div className="d-flex justify-content-between m-2">
             
         <h1>
@@ -183,11 +206,12 @@ export default function AlumnoDetailPage() {
                         <td>{familiar.nombre}</td>
                         <td>{familiar.apellido}</td>
                         <td>{familiar.dni}</td>
-                        <td>{familiar.fecha_nacimiento}</td>
+                        <td>{familiar.fechaNac}</td>
                         <td>{familiar.telefono}</td>
                         <td>{familiar.parentesco}</td>
                         <td>
-                          <button className="btn btn-sm btn-outline-primary">
+                          <button className="btn btn-sm btn-outline-primary" onClick={() => handleEditFamiliar(familiar)}>
+                            <i className="bi bi-pencil"></i>
                             Editar
                           </button>
                         </td>
@@ -204,7 +228,7 @@ export default function AlumnoDetailPage() {
               <div className="d-flex justify-content-end">
                 <button
                   className="btn btn-success"
-                  onClick={() => console.log("abrir formulario")}
+                  onClick={handleAddFamiliar}
                 >
                   + Agregar familiar
                 </button>
@@ -256,6 +280,16 @@ export default function AlumnoDetailPage() {
           // Aquí puedes manejar la lógica para guardar los cambios en el alumno
         }}
       />
+      <FamiliarModal
+  show={showFamiliarModal}
+  onHide={() => setShowFamiliarModal(false)}
+  familiar={selectedFamiliar}
+  alumnoId={alumno.id}
+  onSubmit={(familiar) => {
+    console.log("Familiar actualizado:", familiar);
+    // Aquí puedes manejar la lógica para guardar los cambios en el familiar
+  }}
+/>
     </>
   );
 }
