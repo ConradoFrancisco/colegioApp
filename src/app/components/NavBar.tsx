@@ -58,7 +58,7 @@ export default function NavBar(){
                   className={activeItem === "alumnos" ? "nav-item active" : "nav-item"}
                   onClick={() => setActiveItem("alumnos")}
                 >
-                <Link className="nav-link" href="/">
+                <Link className="nav-link" href="/alumnos">
                   <PiStudentBold size={25} className="me-4" />
                   <p>Listado de alumnos</p>
                 </Link>

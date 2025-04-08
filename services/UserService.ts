@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 
 class UserService {
   async getUsers() {
-    const response = await axios.get("http://localhost/api/index.php", {
+    const response = await axios.get("http://localhost/ColegioApi/index.php", {
       params: { endpoint: "users" },
     });
     return response.data;
@@ -12,7 +12,7 @@ class UserService {
   async setStates(id: number, state: number) {
     try {
       const response = await axios.put(
-        "http://localhost/api/index.php?endpoint=updateStatus",
+        "http://localhost/ColegioApi/index.php?endpoint=updateStatus",
         {
           id: id,
           estado: state,
@@ -28,7 +28,7 @@ class UserService {
   async deleteUser(id: number) {
     try {
       const response = await axios.put(
-        "http://localhost/api/index.php?endpoint=updateDelete",
+        "http://localhost/ColegioApi/index.php?endpoint=updateDelete",
         {
           id: id,
         }
