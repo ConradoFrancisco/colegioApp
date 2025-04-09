@@ -2101,11 +2101,11 @@ body > .navbar-collapse {
 .form-check.disabled .form-check-label {
   cursor: not-allowed; }
 
-.form-check input[type="checkbox"],
+/* .form-check input[type="checkbox"],
 .form-check-radio input[type="radio"] {
   opacity: 0;
   position: absolute;
-  visibility: hidden; }
+  visibility: hidden; } */
 
 .form-check input[type="checkbox"]:checked + .form-check-sign::after {
   opacity: 1; }

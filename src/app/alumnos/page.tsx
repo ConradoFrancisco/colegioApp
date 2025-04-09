@@ -5,6 +5,8 @@ import Link from 'next/link'
 import AlumnosService from '../../../services/AlumnosService'
 import { useEffect, useState } from 'react'
 import AlumnoModal from './components/AlumnoModal'
+import { ToastContainer } from 'react-toastify'
+import "react-toastify/dist/ReactToastify.css";
 
 interface IAlumnoListado{
   id: string
@@ -23,6 +25,7 @@ interface IAlumnoListado{
 export default function AlumnosPage() {
   const [alumnos,setAlumnos] = useState<IAlumnoListado[] | null>(null)
   const [showModal, setShowModal] = useState(false)
+  const [flag,setFlag] = useState(false);
   // Simulación de datos hasta traerlos desde el backend
   /* const alumnos : IAlumnoListado[] = [
     { id: 1, nombre: 'Valentina', apellido: 'Gómez',fechaNac: '2000-01-01',dni: '12345678',barrio: 'Centro',direccion: 'Av. Libertador 1234' },
@@ -33,7 +36,7 @@ export default function AlumnosPage() {
         // Acá harías la llamada a tu backend para guardar el nuevo alumno
         console.log('Nuevo alumno:', data)
         // await AlumnosService.createAlumno(data)
-        await getAlumnos()
+       setFlag(!flag)
       } catch (error) {
         console.error("Error al guardar alumno", error)
       }
@@ -46,7 +49,7 @@ export default function AlumnosPage() {
 
   useEffect(()=>{
     getAlumnos();
-  },[])
+  },[flag])
   return (
     <>
     <Container fluid className="my-4">
@@ -98,6 +101,8 @@ export default function AlumnosPage() {
         onClose={() => setShowModal(false)}
         onSubmit={handleCreateAlumno}
       />
+    <ToastContainer />
+
     </>
   )
 }
