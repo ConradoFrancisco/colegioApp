@@ -8,7 +8,7 @@ class AlumnosService{
         const response = await axios.get(`${API_URL}?endpoint=alumnos/getAll`);
         return response.data;
     }
-    public async CreateAlumno(data: unknown): Promise<[]> {
+    public async createAlumno(data: unknown): Promise<[]> {
         try{
             const response = await axios.post(`${API_URL}?endpoint=alumnos/create`, data);
             toast.success(response.data.message);
@@ -16,6 +16,17 @@ class AlumnosService{
         }catch(e){
             console.log(e) 
             toast.error("Error al crear el alumno")
+            return []
+        }
+    }
+    public async getById(id:string): Promise<[]> {
+        try{
+            const response = await axios.get(`${API_URL}?endpoint=alumnos/get&id=${id}`);
+          /*   toast.success(response.data.message); */
+            return response.data;
+        }catch(e){
+            console.log(e) 
+            toast.error("Error al crear obtener el alumno")
             return []
         }
     }

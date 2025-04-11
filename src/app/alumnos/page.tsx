@@ -25,7 +25,7 @@ interface IAlumnoListado{
 export default function AlumnosPage() {
   const [alumnos,setAlumnos] = useState<IAlumnoListado[] | null>(null)
   const [showModal, setShowModal] = useState(false)
-  const [flag,setFlag] = useState(false);
+  const [flag,setFlag] = useState(0);
   // Simulación de datos hasta traerlos desde el backend
   /* const alumnos : IAlumnoListado[] = [
     { id: 1, nombre: 'Valentina', apellido: 'Gómez',fechaNac: '2000-01-01',dni: '12345678',barrio: 'Centro',direccion: 'Av. Libertador 1234' },
@@ -35,21 +35,25 @@ export default function AlumnosPage() {
       try {
         // Acá harías la llamada a tu backend para guardar el nuevo alumno
         console.log('Nuevo alumno:', data)
-        // await AlumnosService.createAlumno(data)
-       setFlag(!flag)
+         await AlumnosService.createAlumno(data)
+         setFlag(flag => flag + 1)
+        getAlumnos()
       } catch (error) {
         console.error("Error al guardar alumno", error)
+      }finally{
+        setShowModal(false)
       }
     }
   
   const getAlumnos = async () => {
     const response = await AlumnosService.getAlumnos();
     setAlumnos(response)
+
   }
 
   useEffect(()=>{
     getAlumnos();
-  },[flag])
+  },[])
   return (
     <>
     <Container fluid className="my-4">

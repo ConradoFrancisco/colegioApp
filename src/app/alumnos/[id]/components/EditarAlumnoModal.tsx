@@ -14,7 +14,6 @@ interface Alumno {
   socioEducativo: boolean
   escuela: string
   anioEscolar: string
-  turno: 'TM' | 'TT' | 'TV' | 'J Comp.'
 }
 
 interface AlumnoEditModalProps {
@@ -147,19 +146,7 @@ export default function AlumnoEditModal({ alumno, show, onClose, onSave }: Alumn
             />
           </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Turno</Form.Label>
-            <Form.Select
-              name="turno"
-              value={formData.turno}
-              onChange={handleChange}
-            >
-              <option value="TM">TM</option>
-              <option value="TT">TT</option>
-              <option value="TV">TV</option>
-              <option value="J Comp.">J Comp.</option>
-            </Form.Select>
-          </Form.Group>
+
         </Form>
       </Modal.Body>
       <Modal.Footer>

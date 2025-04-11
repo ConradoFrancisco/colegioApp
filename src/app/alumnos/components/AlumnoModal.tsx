@@ -1,7 +1,7 @@
 import { Modal, Form, Button } from "react-bootstrap";
 import { Formik, Field, Form as FormikForm, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import AlumnosService from "../../../../services/AlumnosService";
+
 
 interface AlumnoFormValues {
   nombre: string;
@@ -13,7 +13,6 @@ interface AlumnoFormValues {
   socio_educativo: boolean;
   escuela: string;
   anio_escolar: string;
-  
 }
 
 interface Props {
@@ -44,6 +43,10 @@ const validationSchema = Yup.object({
   escuela: Yup.string().required("La escuela es obligatoria"),
   anio_escolar: Yup.string().required("El año escolar es obligatorio"),
 });
+const anioEscolarOptions = [
+  "1er grado", "2do grado", "3er grado", "4to grado", "5to grado", "6to grado",
+  "1er año", "2do año", "3er año", "4to año", "5to año", "6to año",
+];
 
 export default function AlumnoModal({ show, onClose, onSubmit }: Props) {
   return (
@@ -56,8 +59,6 @@ export default function AlumnoModal({ show, onClose, onSubmit }: Props) {
         validationSchema={validationSchema}
         onSubmit={ async (values) => {
           onSubmit(values);
-          await AlumnosService.CreateAlumno(values)
-          onClose();
         }}
       >
         {({ handleChange, values }) => (
@@ -73,7 +74,7 @@ export default function AlumnoModal({ show, onClose, onSubmit }: Props) {
                 { name: "direccion", label: "Dirección" },
                 { name: "barrio", label: "Barrio" },
                 { name: "escuela", label: "Escuela" },
-                { name: "anio_escolar", label: "Año escolar" },
+               
               ].map(({ name, label, type = "text" }) => (
                 <div className="col-md-6"  key={name}>
 
@@ -89,8 +90,20 @@ export default function AlumnoModal({ show, onClose, onSubmit }: Props) {
                 </Form.Group>
                 </div>
               ))}
+              <div className="col-md-6">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Año escolar</Form.Label>
+                    <Field as={Form.Select} name="anio_escolar">
+                      <option value="">Seleccionar año escolar</option>
+                      {anioEscolarOptions.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </Field>
+                    <ErrorMessage name="anio_escolar" component="div" className="text-danger" />
+                  </Form.Group>
                 </div>
-
               <Form.Group className="mb-3">
                 <Form.Check
                   type="checkbox"
@@ -100,6 +113,7 @@ export default function AlumnoModal({ show, onClose, onSubmit }: Props) {
                   onChange={handleChange}
                 />
               </Form.Group>
+                </div>
 
               
             </Modal.Body>
@@ -111,6 +125,7 @@ export default function AlumnoModal({ show, onClose, onSubmit }: Props) {
                 Guardar
               </Button>
             </Modal.Footer>
+            
           </FormikForm>
         )}
       </Formik>
