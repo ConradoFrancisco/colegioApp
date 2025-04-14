@@ -8,7 +8,7 @@ const API_URL =
 class AlumnosService {
   public async getAlumnos(): Promise<[]> {
     const response = await axios.get(
-      `http://localhost/colegioApi/?endpoint=alumnos/getAll`
+      `http://localhost/api/?endpoint=alumnos/getAll`
     );
     return response.data;
   }
@@ -44,6 +44,19 @@ class AlumnosService {
     try {
       const response = await axios.get(
         `${API_URL}?endpoint=alumnos/get&id=${id}`
+      );
+      /*   toast.success(response.data.message); */
+      return response.data;
+    } catch (e) {
+      console.log(e);
+      toast.error("Error al crear obtener el alumno");
+      return {} as IAlumno;
+    }
+  }
+  public async createFamiliarYvincular(data:unknown): Promise<IAlumno> {
+    try {
+      const response = await axios.post(
+        `${API_URL}?endpoint=alumnos/createFamiliar`,data
       );
       /*   toast.success(response.data.message); */
       return response.data;

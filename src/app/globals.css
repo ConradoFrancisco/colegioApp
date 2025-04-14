@@ -4672,9 +4672,9 @@ License - nucleoapp.com/license/
   background: linear-gradient(to bottom, #282828 0%, rgba(17, 17, 17, 0.7) 100%);
   background-size: 150% 150%; }
 
-.sidebar .logo-img img {
+/* .sidebar .logo-img img {
   max-width: 40px;
-  max-height: 40px; }
+  max-height: 40px; } */
 
 @media (max-width: 991px) {
   .sidebar .nav > li.active.active-pro {

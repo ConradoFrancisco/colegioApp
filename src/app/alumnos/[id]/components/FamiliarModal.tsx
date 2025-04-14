@@ -47,8 +47,10 @@ export default function FamiliarModal({ show, onHide, onSubmit, familiar }: Fami
     parentesco: '',
   }
 
-  const handleSubmit = (values: FamiliarFormValues) => {
-    onSubmit(values)
+  const handleSubmit = async (values: FamiliarFormValues) => {
+    /* const response = await 
+    onSubmit(values) */
+    console.log(values)
     onHide()
   }
 

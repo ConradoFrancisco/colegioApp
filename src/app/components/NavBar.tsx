@@ -23,22 +23,16 @@ export default function NavBar(){
             }}
           />
           <div className="sidebar-wrapper">
-            <div className="logo d-flex align-items-center justify-content-start">
+            <div className="logo">
               <a
                 href="https://www.creative-tim.com?ref=lbd-sidebar"
                 className="simple-text logo-mini mx-1"
               >
-                <div className="logo-img">
-                  <PiBookBookmarkFill size={30} />
+                <div className="logo-img m-auto">
+                  <img src="logo2.png" alt="" width={150}/>
                 </div>
               </a>
-              <a
-                className="simple-text"
-                style={{ textDecoration: "none" }}
-                href="http://www.creative-tim.com"
-              >
-                Colegio App
-              </a>
+              
             </div>
             <div className="nav">
             <li
