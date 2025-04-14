@@ -4,8 +4,8 @@ import { Card, Container, Row, Col, Accordion, Table } from "react-bootstrap";
 import AlumnoEditModal from "./components/EditarAlumnoModal";
 import { useEffect, useState } from "react";
 import FamiliarModal from "./components/FamiliarModal";
-import { useRouter } from "next/router";
 import AlumnosService from "../../../../services/AlumnosService";
+
 
 interface IFamiliar {
   fechaNac: string;
@@ -29,7 +29,7 @@ interface IActividad {
   estado: "Activa" | "Inactiva";
 }
 
-interface IAlumno {
+export interface IAlumno {
   id: number;
   nombre: string;
   apellido: string;
@@ -43,69 +43,73 @@ interface IAlumno {
   actividades: IActividad[];
   anioEscolar: string;
 }
-const alumno: IAlumno = {
-  id: 1,
-  nombre: "Valentina",
-  apellido: "Gómez",
-  dni: "12345678",
-  fechaNac: "2000-01-01",
-  direccion: "Av. Libertador 1234",
-  barrio: "Centro",
-  escuela: "Escuela N° 123",
-  socioEducativo: true,
-  anioEscolar: "5° grado",
 
-  familiares: [
-    {
-      id: 1,
-      nombre: "Laura",
-      apellido: "Gómez",
-      dni: "34567890",
-      telefono: "1122334455",
-      parentesco: "Madre",
-      fechaNac: "1985-10-20",
-    },
-    {
-      id: 2,
-      nombre: "Carlos",
-      apellido: "Gómez",
-      dni: "34567891",
-      telefono: "1122334466",
-      parentesco: "Padre",
-      fechaNac: "1980-05-15",
-    },
-  ],
-  actividades: [
-    {
-      id: 1,
-      nombre: "Taller de Cerámica",
-      tipo: "Taller",
-      descripcion: "Actividades creativas con arcilla.",
-      cupo: 15,
-      turno: "TT",
-      fecha_inicio: "2024-03-01",
-      fecha_fin: "2024-12-15",
-      estado: "Activa",
-    },
-    {
-      id: 2,
-      nombre: "Grupo Recreativo",
-      tipo: "Grupo",
-      descripcion: "Juegos y actividades al aire libre.",
-      cupo: 25,
-      turno: "TM",
-      fecha_inicio: "2024-04-01",
-      fecha_fin: "2024-11-30",
-      estado: "Activa",
-    },
-  ],
-};
 
-export default function AlumnoDetailPage({ params }: { params: { id: string } }) {
-  
+export default function AlumnoDetailPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   // Simulación de un alumno
   const [showModal, setShowModal] = useState(false);
   const [showFamiliarModal, setShowFamiliarModal] = useState(false);
+  const [alumno, setAlumno] = useState<IAlumno | undefined>({
+    id: 1,
+    nombre: "Valentina",
+    apellido: "Gómez",
+    dni: "12345678",
+    fechaNac: "2000-01-01",
+    direccion: "Av. Libertador 1234",
+    barrio: "Centro",
+    escuela: "Escuela N° 123",
+    socioEducativo: true,
+    anioEscolar: "5° grado",
+  
+    familiares: [
+      {
+        id: 1,
+        nombre: "Laura",
+        apellido: "Gómez",
+        dni: "34567890",
+        telefono: "1122334455",
+        parentesco: "Madre",
+        fechaNac: "1985-10-20",
+      },
+      {
+        id: 2,
+        nombre: "Carlos",
+        apellido: "Gómez",
+        dni: "34567891",
+        telefono: "1122334466",
+        parentesco: "Padre",
+        fechaNac: "1980-05-15",
+      },
+    ],
+    actividades: [
+      {
+        id: 1,
+        nombre: "Taller de Cerámica",
+        tipo: "Taller",
+        descripcion: "Actividades creativas con arcilla.",
+        cupo: 15,
+        turno: "TT",
+        fecha_inicio: "2024-03-01",
+        fecha_fin: "2024-12-15",
+        estado: "Activa",
+      },
+      {
+        id: 2,
+        nombre: "Grupo Recreativo",
+        tipo: "Grupo",
+        descripcion: "Juegos y actividades al aire libre.",
+        cupo: 25,
+        turno: "TM",
+        fecha_inicio: "2024-04-01",
+        fecha_fin: "2024-11-30",
+        estado: "Activa",
+      },
+    ],
+  });
   const [selectedFamiliar, setSelectedFamiliar] = useState<IFamiliar | null>({
     id: 1,
     nombre: "Laura",
@@ -115,7 +119,7 @@ export default function AlumnoDetailPage({ params }: { params: { id: string } })
     parentesco: "Madre",
     fechaNac: "1985-10-20",
   });
-
+  const	  [flag, setFlag] = useState(0);
   // Funciones para abrir modal
   const handleAddFamiliar = () => {
     setSelectedFamiliar(null); // nuevo
@@ -131,16 +135,16 @@ export default function AlumnoDetailPage({ params }: { params: { id: string } })
   useEffect(() => {
     const getAlumno = async () => {
       const response = await AlumnosService.getById(params.id as string);
-      console.log(response);
+      setAlumno(response as IAlumno); // Assuming the first element is the desired alumno
     };
     getAlumno();
-  }, []);
+  }, [flag]);
   return (
     <>
       <Container fluid className="my-4">
         <div className="d-flex justify-content-between m-2">
           <h1>
-            {alumno.apellido}, {alumno.nombre}
+            {alumno?.apellido}, {alumno?.nombre}
           </h1>
           <button
             className="btn btn-primary py-2"
@@ -152,43 +156,38 @@ export default function AlumnoDetailPage({ params }: { params: { id: string } })
 
         <Row className="mb-4 d-flex">
           <Col md={6} className="d-flex">
-            <Card className="w-100">
+            <Card className="w-100 h-100">
               <Card.Header>Datos personales</Card.Header>
               <Card.Body>
                 <p>
-                  <strong>DNI:</strong> {alumno.dni}
+                  <strong>DNI:</strong> {alumno?.dni}
                 </p>
                 <p>
-                  <strong>Fecha de Nacimiento:</strong> {alumno.fechaNac}
+                  <strong>Fecha de Nacimiento:</strong> {alumno?.fechaNac}
                 </p>
                 <p>
-                  <strong>Dirección:</strong> {alumno.direccion}
+                  <strong>Dirección:</strong> {alumno?.direccion}
                 </p>
                 <p>
-                  <strong>Barrio:</strong> {alumno.barrio}
+                  <strong>Barrio:</strong> {alumno?.barrio}
                 </p>
               </Card.Body>
             </Card>
           </Col>
-          <Col md={6}>
-            <Card>
+          <Col md={6} className="d-flex">
+            <Card className="w-100 h-100">
               <Card.Header>Datos académicos</Card.Header>
               <Card.Body>
                 <p>
-                  <strong>Escuela:</strong> Escuela N° 123
+                  <strong>Escuela:</strong> {alumno?.escuela}
                 </p>
                 <p>
-                  <strong>Año escolar:</strong> 5° grado
+                  <strong>Año escolar:</strong> {alumno?.anioEscolar}
                 </p>
                 <p>
-                  <strong>Turno:</strong> TT
+                  <strong>Condición Socioeducativa:</strong> {alumno?.socioEducativo ? "Sí" : "No"}
                 </p>
-                <p>
-                  <strong>Condición Socioeducativa:</strong> Sí
-                </p>
-                <p>
-                  <strong>Estado:</strong> Lista de espera
-                </p>
+                
               </Card.Body>
             </Card>
           </Col>
@@ -198,7 +197,7 @@ export default function AlumnoDetailPage({ params }: { params: { id: string } })
           <Accordion.Item eventKey="0">
             <Accordion.Header>Familiares</Accordion.Header>
             <Accordion.Body>
-              {alumno.familiares && alumno.familiares.length > 0 ? (
+              {alumno?.familiares && alumno?.familiares.length > 0 ? (
                 <Table striped bordered hover responsive>
                   <thead>
                     <tr>
@@ -251,7 +250,7 @@ export default function AlumnoDetailPage({ params }: { params: { id: string } })
         <Card className="mb-4">
           <Card.Header>Actividades inscriptas</Card.Header>
           <Card.Body>
-            {alumno.actividades.length === 0 ? (
+            {alumno?.actividades.length === 0 ? (
               <p>Este alumno no está inscripto en ninguna actividad.</p>
             ) : (
               <Table striped bordered responsive>
@@ -265,7 +264,7 @@ export default function AlumnoDetailPage({ params }: { params: { id: string } })
                   </tr>
                 </thead>
                 <tbody>
-                  {alumno.actividades.map((act) => (
+                  {alumno?.actividades.map((act) => (
                     <tr key={act.id}>
                       <td>{act.nombre}</td>
                       <td>{act.tipo}</td>
@@ -282,25 +281,28 @@ export default function AlumnoDetailPage({ params }: { params: { id: string } })
           </Card.Body>
         </Card>
       </Container>
-      <AlumnoEditModal
-        alumno={alumno}
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        onSave={(alumnoActualizado) => {
-          console.log("Alumno actualizado:", alumnoActualizado);
-          // Aquí puedes manejar la lógica para guardar los cambios en el alumno
-        }}
-      />
+      {alumno && (
+        <AlumnoEditModal
+        setFlag={setFlag}
+          saveAlumnno={AlumnosService.updateAlumno}
+          alumno={alumno}
+          show={showModal}
+          onClose={() => setShowModal(false)}
+        />
+      )}
+      {alumno && (
+
       <FamiliarModal
         show={showFamiliarModal}
         onHide={() => setShowFamiliarModal(false)}
         familiar={selectedFamiliar}
-        alumnoId={alumno.id}
+        alumnoId={alumno?.id}
         onSubmit={(familiar) => {
           console.log("Familiar actualizado:", familiar);
           // Aquí puedes manejar la lógica para guardar los cambios en el familiar
         }}
       />
+      )}
     </>
   );
 }

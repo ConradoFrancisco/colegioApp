@@ -1,7 +1,7 @@
 
 'use client'
 import { PiBookBookmarkFill, PiStudentBold } from "react-icons/pi";
-import { FaUsers } from "react-icons/fa";
+import { FaBook, FaUsers } from "react-icons/fa";
 import { useState } from "react";
 import "../globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -61,6 +61,15 @@ export default function NavBar(){
                 <Link className="nav-link" href="/alumnos">
                   <PiStudentBold size={25} className="me-4" />
                   <p>Listado de alumnos</p>
+                </Link>
+              </li>
+              <li
+                  className={activeItem === "actividades" ? "nav-item active" : "nav-item"}
+                  onClick={() => setActiveItem("actividades")}
+                >
+                <Link className="nav-link" href="/actividades">
+                  <FaBook size={25} className="me-4" />
+                  <p>Actividades</p>
                 </Link>
               </li>
             </div>
