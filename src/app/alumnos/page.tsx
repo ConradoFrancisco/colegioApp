@@ -9,6 +9,8 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Paginator from "../components/common/Paginator";
 
+import { LuFilter } from "react-icons/lu";
+
 //Agregar Campos Inscripcion {preinscipcion,inscripto,lista de espera, Dado de baja, y contacto
 interface IAlumnoListado {
   id: string;
@@ -71,7 +73,7 @@ export default function AlumnosPage() {
     <>
       <Container fluid className="my-4">
         <div className="d-flex justify-content-between">
-          <h1 className="mb-4">Listado de Alumnos</h1>
+          <h2 className="mb-4">Listado de Alumnos</h2>
           <div className="">
             <button
               className="btn btn-success"
@@ -84,7 +86,7 @@ export default function AlumnosPage() {
         <div className="row">
           <Accordion defaultActiveKey="0" className="mb-3">
             <Accordion.Item eventKey="0">
-              <Accordion.Header>Filtros</Accordion.Header>
+              <Accordion.Header><LuFilter size={20}/> {' '} Filtros</Accordion.Header>
               <Accordion.Body>
                 <div className="row">
                   <div className="col-md-6 mb-3">
@@ -108,7 +110,10 @@ export default function AlumnosPage() {
                   <div className="col-md-3 mb-3 justify-content-between d-flex gap-2">
                     <button
                       className="btn btn-primary w-75 gap-2"
-                      onClick={() => setOffset(0)}
+                      onClick={() => {
+                        getAlumnos();
+                        setOffset(0); // limpia y vuelve a pedir todo
+                      } }
                     >
                       Buscar
                     </button>

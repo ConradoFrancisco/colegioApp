@@ -1,11 +1,20 @@
 "use client";
 
-import { Card, Container, Row, Col, Accordion, Table } from "react-bootstrap";
+import {
+  Card,
+  Container,
+  Row,
+  Col,
+  Accordion,
+  Table,
+  Badge,
+} from "react-bootstrap";
 import AlumnoEditModal from "./components/EditarAlumnoModal";
 import { useEffect, useState } from "react";
 import FamiliarModal from "./components/FamiliarModal";
 import AlumnosService from "../../../../services/AlumnosService";
-
+import InscripcionModal from "./components/InscripcionModal";
+import { ToastContainer } from "react-toastify";
 
 interface IFamiliar {
   fechaNac: string;
@@ -27,6 +36,7 @@ interface IActividad {
   fecha_inicio: string;
   fecha_fin: string;
   estado: "Activa" | "Inactiva";
+  en_lista_espera: string;
 }
 
 export interface IAlumno {
@@ -44,7 +54,6 @@ export interface IAlumno {
   anioEscolar: string;
 }
 
-
 export default function AlumnoDetailPage({
   params,
 }: {
@@ -53,6 +62,7 @@ export default function AlumnoDetailPage({
   // Simulación de un alumno
   const [showModal, setShowModal] = useState(false);
   const [showFamiliarModal, setShowFamiliarModal] = useState(false);
+  const [showInscripcionModal, setShowInscripcionModal] = useState(false);
   const [alumno, setAlumno] = useState<IAlumno | undefined>({
     id: 1,
     nombre: "Valentina",
@@ -64,7 +74,7 @@ export default function AlumnoDetailPage({
     escuela: "Escuela N° 123",
     socioEducativo: true,
     anioEscolar: "5° grado",
-  
+
     familiares: [
       {
         id: 1,
@@ -119,7 +129,7 @@ export default function AlumnoDetailPage({
     parentesco: "Madre",
     fechaNac: "1985-10-20",
   });
-  const	  [flag, setFlag] = useState(0);
+  const [flag, setFlag] = useState(0);
   // Funciones para abrir modal
   const handleAddFamiliar = () => {
     setSelectedFamiliar(null); // nuevo
@@ -185,9 +195,9 @@ export default function AlumnoDetailPage({
                   <strong>Año escolar:</strong> {alumno?.anioEscolar}
                 </p>
                 <p>
-                  <strong>Condición Socioeducativa:</strong> {alumno?.socioEducativo ? "Sí" : "No"}
+                  <strong>Condición Socioeducativa:</strong>{" "}
+                  {alumno?.socioEducativo ? "Sí" : "No"}
                 </p>
-                
               </Card.Body>
             </Card>
           </Col>
@@ -247,43 +257,71 @@ export default function AlumnoDetailPage({
           </Accordion.Item>
         </Accordion>
 
-        <Card className="mb-4">
-          <Card.Header>Actividades inscriptas</Card.Header>
-          <Card.Body>
-            {alumno?.actividades.length === 0 ? (
-              <p>Este alumno no está inscripto en ninguna actividad.</p>
-            ) : (
-              <Table striped bordered responsive>
-                <thead>
-                  <tr>
-                    <th>Nombre</th>
-                    <th>Tipo</th>
-                    <th>Turno</th>
-                    <th>Fechas</th>
-                    <th>Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {alumno?.actividades.map((act) => (
-                    <tr key={act.id}>
-                      <td>{act.nombre}</td>
-                      <td>{act.tipo}</td>
-                      <td>{act.turno}</td>
-                      <td>
-                        {act.fecha_inicio} → {act.fecha_fin}
-                      </td>
-                      <td>{act.estado}</td>
+        <Accordion defaultActiveKey="1" className="mb-4">
+          <Accordion.Item eventKey="1">
+            <div>
+              <Accordion.Header className="d-flex justify-content-between">
+                Actividades
+              </Accordion.Header>
+            </div>
+            <Accordion.Body>
+              {alumno?.actividades && alumno?.actividades.length > 0 ? (
+                <Table striped bordered hover responsive>
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Tipo</th>
+                      <th>Turno</th>
+                      <th>Fechas</th>
+                      <th>Estado</th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
-            )}
-          </Card.Body>
-        </Card>
+                  </thead>
+                  <tbody>
+                    {alumno.actividades.map((act, index) => (
+                      <tr key={index}>
+                        <td>{act.nombre}</td>
+                        <td>{act.tipo}</td>
+                        <td>{act.turno}</td>
+                        <td>
+                          {act.fecha_inicio} → {act.fecha_fin}
+                        </td>
+                        <td>
+                          <Badge
+                            bg={
+                              act.en_lista_espera === "0"
+                                ? "success"
+                                : "warning"
+                            }
+                          >
+                            {act.en_lista_espera === "0"
+                              ? "Inscripto"
+                              : "Lista de espera"}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              ) : (
+                <div className="text-muted mb-3">
+                  Este alumno aún no está inscripto en ninguna actividad.
+                </div>
+              )}
+              <div className="d-flex justify-content-end">
+                <button
+                  className="btn btn-success"
+                  onClick={() => setShowInscripcionModal(true)}
+                >
+                  + Nueva inscripción
+                </button>
+              </div>
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
       </Container>
       {alumno && (
         <AlumnoEditModal
-        setFlag={setFlag}
+          setFlag={setFlag}
           saveAlumnno={AlumnosService.updateAlumno}
           alumno={alumno}
           show={showModal}
@@ -291,19 +329,27 @@ export default function AlumnoDetailPage({
         />
       )}
       {alumno && (
-
-      <FamiliarModal
-      setFlag={setFlag}
-        show={showFamiliarModal}
-        onHide={() => setShowFamiliarModal(false)}
-        familiar={selectedFamiliar}
-        alumno_id={alumno?.id}
-        onSubmit={(familiar) => {
-          console.log("Familiar actualizado:", familiar);
-          // Aquí puedes manejar la lógica para guardar los cambios en el familiar
-        }}
-      />
+        <>
+          <FamiliarModal
+            setFlag={setFlag}
+            show={showFamiliarModal}
+            onHide={() => setShowFamiliarModal(false)}
+            familiar={selectedFamiliar}
+            alumno_id={alumno?.id}
+            onSubmit={(familiar) => {
+              console.log("Familiar actualizado:", familiar);
+              // Aquí puedes manejar la lógica para guardar los cambios en el familiar
+            }}
+          />
+          <InscripcionModal
+            setFlag={setFlag}
+            alumno_id={alumno?.id}
+            show={showInscripcionModal}
+            onClose={() => setShowInscripcionModal(false)}
+          />
+        </>
       )}
+      <ToastContainer />
     </>
   );
 }

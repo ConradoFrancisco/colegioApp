@@ -1,11 +1,15 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import { Button, Container, Modal, Table, Badge } from "react-bootstrap"
+import { Button, Container, Table, Badge } from "react-bootstrap"
 import ActividadModal from "./components/ActividadModal"
+import { FaEdit, FaPause, FaPlay, FaTrash } from "react-icons/fa";
+import ActividadService from "../../../services/ActividadService";
+import { ToastContainer } from "react-toastify";
+import Paginator from "../components/common/Paginator";
 
-interface IActividad {
-  id: number;
+export interface IActividad {
+  id?: number;
   nombre: string;
   tipo: "Grupo" | "Taller";
   descripcion: string;
@@ -19,29 +23,30 @@ interface IActividad {
 export default function ActividadesPage() {
   const [actividades, setActividades] = useState<IActividad[]>([])
   const [showModal, setShowModal] = useState(false)
+  const [cant, setCant] = useState(0)
+  const [limit, setLimit] = useState(4)
+  const [offset, setOffset] = useState(0)
 
   const fetchActividades = async () => {
-    const res = await fetch("http://localhost/colegioApi/?endpoint=actividades/getAll")
-    const data = await res.json()
+    const res = await ActividadService.getAll({ limit, offset })
+    const { data,cant } = res
+    setCant(cant)
     setActividades(data)
   }
 
   const handleCreate = async (actividad: IActividad) => {
-    await fetch("http://localhost/colegioApi/?endpoint=actividades/create", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(actividad),
-    })
+    await ActividadService.createActividad(actividad)
     setShowModal(false)
     fetchActividades()
   }
 
   useEffect(() => {
     fetchActividades()
-  }, [])
+  }, [limit,offset])
 
   return (
-    <Container className="my-4">
+    <>
+    <Container fluid className="my-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2>Actividades</h2>
         <Button onClick={() => setShowModal(true)}>+ Nueva actividad</Button>
@@ -54,10 +59,9 @@ export default function ActividadesPage() {
             <th>Nombre</th>
             <th>Tipo</th>
             <th>Turno</th>
-            <th>Inicio</th>
-            <th>Fin</th>
-            <th>Cupo</th>
             <th>Estado</th>
+            <th /* className="d-flex" */ style={{width:'11%'}}>Inscripciones</th>
+            <th style={{width:'10%'}}>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -67,20 +71,31 @@ export default function ActividadesPage() {
               <td>{a.nombre}</td>
               <td>{a.tipo}</td>
               <td>{a.turno}</td>
-              <td>{a.fecha_inicio}</td>
-              <td>{a.fecha_fin}</td>
-              <td>{a.cupo ?? "-"}</td>
               <td>
-                <Badge bg={a.estado === "Activa" ? "success" : "secondary"}>
+                <Badge bg={a.estado === "Activa" ? "success" : "warning"}>
                   {a.estado}
                 </Badge>
+              </td>
+              <td><button className="btn btn-primary">Ver Inscripciones</button></td>
+              <td className="d-flex gap-2" /* style={{width:'10%'}} */><button className="btn btn-primary"><FaEdit/></button>
+              <button className={`${a.estado === "Activa" ? 'btn btn-secondary' : 'btn btn-success'}`}>{a.estado === 'Activa' ? <FaPause/> : <FaPlay/>}</button>
+              <button className="btn btn-danger"><FaTrash/></button>
               </td>
             </tr>
           ))}
         </tbody>
+        
+       
       </Table>
-
-     {/*  <ActividadModal show={showModal} onClose={() => setShowModal(false)} onSubmit={handleCreate} /> */}
+          <Paginator
+            cantidad={cant}
+            limit={limit}
+            offset={offset}
+            setOffset={setOffset}
+          />
+      <ActividadModal show={showModal} onClose={() => setShowModal(false)} onSubmit={handleCreate} />
     </Container>
+      <ToastContainer />
+</>
   )
 }

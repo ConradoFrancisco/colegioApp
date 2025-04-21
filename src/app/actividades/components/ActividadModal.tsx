@@ -1,23 +1,13 @@
 import { Modal, Form, Button } from "react-bootstrap"
 import { Formik, Field, Form as FormikForm, ErrorMessage } from "formik"
 import * as Yup from "yup"
+import { IActividad } from "../page"
 
-interface IActividad {
-  id?: number
-  nombre: string
-  tipo: "Grupo" | "Taller"
-  descripcion: string
-  cupo: number | null
-  turno: "TM" | "TT" | "TV" | "J Comp."
-  fecha_inicio: string
-  fecha_fin: string
-  estado: "Activa" | "Inactiva"
-}
 
 interface Props {
   show: boolean
   onClose: () => void
-  onSubmit: (actividad: IActividad) => void
+  onSubmit: (actividad: IActividad) => Promise<void>
 }
 
 const initialValues: IActividad = {

@@ -24,7 +24,7 @@ class AlumnosService {
       query.append("offset", params.offset.toString());
 
     const response = await axios.get(
-      `http://localhost/colegioApi/?endpoint=alumnos/getAll&${query.toString()}`
+      `${API_URL}?endpoint=alumnos/getAll&${query.toString()}`
     );
 
     return {
