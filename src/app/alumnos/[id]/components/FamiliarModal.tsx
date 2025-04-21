@@ -1,23 +1,27 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
 import { Formik, Field, Form as FormikForm, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
+import AlumnosService from '../../../../../services/AlumnosService'
 
 interface FamiliarFormProps {
   show: boolean
   onHide: () => void
   onSubmit: (values: FamiliarFormValues | { id: number }) => void
   familiar?: FamiliarFormValues | null
-  alumnoId: number
+  alumno_id: number
+  setFlag: (flag: number) => void
 }
 
 export interface FamiliarFormValues {
+  id?: number
   apellido: string
   nombre: string
   dni: string
   fechaNac: string
   telefono: string
   parentesco: string
+  alumno_id?: number
 }
 
 const validationSchema = Yup.object({
@@ -34,7 +38,7 @@ const familiaresExistentes = [
   { id: 2, nombre: 'María González', dni: '23456789' },
 ]
 
-export default function FamiliarModal({ show, onHide, onSubmit, familiar }: FamiliarFormProps) {
+export default function FamiliarModal({ show, onHide, onSubmit, familiar,alumno_id,setFlag}: FamiliarFormProps) {
   const [usarExistente, setUsarExistente] = useState(false)
   const [familiarSeleccionado, setFamiliarSeleccionado] = useState<number | null>(null)
 
@@ -45,12 +49,26 @@ export default function FamiliarModal({ show, onHide, onSubmit, familiar }: Fami
     fechaNac: '',
     telefono: '',
     parentesco: '',
+    alumno_id:alumno_id
   }
 
   const handleSubmit = async (values: FamiliarFormValues) => {
-    /* const response = await 
-    onSubmit(values) */
-    console.log(values)
+    if (familiar){
+      if (familiar.id !== undefined) {
+        const response = await AlumnosService.updateFamiliar(familiar.id, values)
+        setFlag(alumno_id + 1)
+        console.log(response)
+        onHide()
+      } else {
+        console.error("Familiar ID is undefined")
+      }
+      setFlag(alumno_id + 1)
+      onHide()
+      return
+    }
+    const response = await AlumnosService.createFamiliarYvincular(values)
+    setFlag(alumno_id + 1)
+    console.log(response)
     onHide()
   }
 
@@ -60,7 +78,9 @@ export default function FamiliarModal({ show, onHide, onSubmit, familiar }: Fami
       onHide()
     }
   }
-
+  useEffect(()=>{
+    console.log('Familiar:', familiar)
+  },[])
   return (
     <Modal show={show} onHide={onHide} centered>
       <Modal.Header closeButton>

@@ -293,10 +293,11 @@ export default function AlumnoDetailPage({
       {alumno && (
 
       <FamiliarModal
+      setFlag={setFlag}
         show={showFamiliarModal}
         onHide={() => setShowFamiliarModal(false)}
         familiar={selectedFamiliar}
-        alumnoId={alumno?.id}
+        alumno_id={alumno?.id}
         onSubmit={(familiar) => {
           console.log("Familiar actualizado:", familiar);
           // Aquí puedes manejar la lógica para guardar los cambios en el familiar

@@ -61,7 +61,7 @@ export default function ActividadesPage() {
           </tr>
         </thead>
         <tbody>
-          {actividades.map((a) => (
+          {actividades?.map((a) => (
             <tr key={a.id}>
               <td>{a.id}</td>
               <td>{a.nombre}</td>
@@ -80,7 +80,7 @@ export default function ActividadesPage() {
         </tbody>
       </Table>
 
-      <ActividadModal show={showModal} onClose={() => setShowModal(false)} onSubmit={handleCreate} />
+     {/*  <ActividadModal show={showModal} onClose={() => setShowModal(false)} onSubmit={handleCreate} /> */}
     </Container>
   )
 }
