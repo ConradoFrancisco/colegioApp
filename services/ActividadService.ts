@@ -58,6 +58,47 @@ class ActividadService{
             return [];
         }
     }
+    public async getInscriptos(id: number): Promise<[]> {
+        try {
+            const response = await axios.get(
+                `${API_URL}?endpoint=inscripcion/getInscriptos&id=${id}`
+            );
+            return response.data;
+        } catch (e) {
+            console.log(e);
+            toast.error("Error al obtener los inscriptos");
+            return [];
+        }
+    }
+    public async updateActividad(id: number, data: IActividad): Promise<[]> {
+        try {
+          const response = await axios.put(
+            `${API_URL}?endpoint=actividad/update&id=${id}`,
+            data
+          );
+          toast.success(response.data.message);
+          return response.data;
+        } catch (e) {
+          console.log(e);
+          toast.error("Error al modificar la actividad");
+          return [];
+        }
+      }
+      public async updateEstado(id: number, estado:string): Promise<[]> {
+        try {
+          const response = await axios.put(
+            `${API_URL}?endpoint=actividad/updateEstado&id=${id}`,
+            {estado}
+          );
+          console.log('estado',estado)
+          toast.success(response.data.message);
+          return response.data;
+        } catch (e) {
+          console.log(e);
+          toast.error("Error al modificar la actividad");
+          return [];
+        }
+      }
 }
 // eslint-disable-next-line import/no-anonymous-default-export
 export default new ActividadService();

@@ -7,7 +7,8 @@ import { IActividad } from "../page"
 interface Props {
   show: boolean
   onClose: () => void
-  onSubmit: (actividad: IActividad) => Promise<void>
+  onSubmit: (actividad: IActividad) => Promise<void>,
+  initialData?: IActividad | null
 }
 
 const initialValues: IActividad = {
@@ -32,11 +33,21 @@ const validationSchema = Yup.object({
   estado: Yup.string().oneOf(["Activa", "Inactiva"]).required(),
 })
 
-export default function ActividadModal({ show, onClose, onSubmit }: Props) {
+export default function ActividadModal({ show, onClose, onSubmit,initialData }: Props) {
+  const initialValues: IActividad = initialData || {
+    nombre: '',
+    tipo: 'Grupo',
+    descripcion: '',
+    cupo: null,
+    turno: 'TM',
+    fecha_inicio: '',
+    fecha_fin: '',
+    estado: 'Activa',
+  }
   return (
     <Modal show={show} onHide={onClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Nueva Actividad</Modal.Title>
+        <Modal.Title>{initialData ? 'Editar Actividad':'Nueva Actividad'} </Modal.Title>
       </Modal.Header>
 
       <Formik

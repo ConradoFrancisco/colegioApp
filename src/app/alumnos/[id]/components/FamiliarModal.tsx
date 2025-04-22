@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
 import { Formik, Field, Form as FormikForm, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
@@ -78,9 +78,7 @@ export default function FamiliarModal({ show, onHide, onSubmit, familiar,alumno_
       onHide()
     }
   }
-  useEffect(()=>{
-    console.log('Familiar:', familiar)
-  },[])
+ 
   return (
     <Modal show={show} onHide={onHide} centered>
       <Modal.Header closeButton>
