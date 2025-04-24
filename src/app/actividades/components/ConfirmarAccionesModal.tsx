@@ -2,7 +2,6 @@
 
 import { Modal, Button } from "react-bootstrap";
 import { IActividad } from "../page";
-import { p } from "framer-motion/client";
 // o donde tengas tu interfaz
 
 interface Props {

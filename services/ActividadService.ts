@@ -58,6 +58,22 @@ class ActividadService{
             return [];
         }
     }
+
+    public async toggleInscripcion(id: number,estado:number | string): Promise<[]> {
+        try {
+            const response = await axios.put(
+                `${API_URL}?endpoint=inscripcion/toggleState&id=${id}`,
+                {estado}
+            );
+            toast.success(response.data.message);
+            return response.data;
+        } catch (e) {
+            console.log(e);
+            toast.error("Error al modificar la inscripcion");
+            return [];
+        }
+    }
+
     public async getInscriptos(id: number): Promise<[]> {
         try {
             const response = await axios.get(
