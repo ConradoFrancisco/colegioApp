@@ -17,6 +17,14 @@ import AlumnosService from "../../../../services/AlumnosService";
 import InscripcionModal from "./components/InscripcionModal";
 import { ToastContainer } from "react-toastify";
 
+interface IDocumento {
+  id: number;
+  alumno_id: number;
+  tipo: string;
+  url: string;
+  descripcion?: string;
+}
+
 interface IFamiliar {
   fechaNac: string;
   id: number;
@@ -60,6 +68,12 @@ export default function AlumnoDetailPage({
 }: {
   params: { id: string };
 }) {
+
+  const [documentos, setDocumentos] = useState<IDocumento[]>([]);
+  const [showDocModal, setShowDocModal] = useState(false);
+  const [docFile, setDocFile] = useState<File | null>(null);
+  const [docTipo, setDocTipo] = useState("DNI");
+
   // Simulación de un alumno
   const [showModal, setShowModal] = useState(false);
   const [showFamiliarModal, setShowFamiliarModal] = useState(false);
@@ -315,6 +329,19 @@ export default function AlumnoDetailPage({
                 >
                   + Nueva inscripción
                 </button>
+              </div>
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+        <Accordion>
+          <Accordion.Item eventKey="2">
+            <Accordion.Header>Documentación adjunta</Accordion.Header>
+            <Accordion.Body>
+              <p className="text-muted mb-3">
+                No hay documentación adjunta para este alumno.
+              </p>
+              <div className="d-flex justify-content-end">
+                <button className="btn btn-success">+ Adjuntar</button>
               </div>
             </Accordion.Body>
           </Accordion.Item>
