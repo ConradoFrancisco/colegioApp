@@ -73,24 +73,24 @@ export default function InscriptosModal({
                     <td>
                       <Badge
                         bg={
-                          inscripto.en_lista_espera === '0'
+                          inscripto.en_lista_espera === 0
                             ? "success"
                             : "warning"
                         }
                       >
-                        {inscripto.en_lista_espera === '0'
+                        {inscripto.en_lista_espera === 0
                           ? "Inscripto"
                           : "Lista de espera"}
                       </Badge>
                     </td>
                     <td>
-                        <button className={`btn btn-${inscripto.en_lista_espera === '1' ? 'success' : 'warning'}`} onClick={async () => {
-                          await ActividadService.toggleInscripcion(inscripto.id,inscripto.en_lista_espera === '0' ? 1 : 0);
+                        <button className={`btn btn-${inscripto.en_lista_espera === 1 ? 'success' : 'warning'}`} onClick={async () => {
+                          await ActividadService.toggleInscripcion(inscripto.id,inscripto.en_lista_espera === 0 ? 1 : 0);
                           fetchInscriptos();
                             
                         }
                         }>
-                          {inscripto.en_lista_espera === '1' ? 'Alta inscripcion' : 'Baja inscripcion'}
+                          {inscripto.en_lista_espera === 1 ? 'Alta inscripcion' : 'Baja inscripcion'}
                         </button>
 
                     </td>

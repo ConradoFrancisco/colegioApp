@@ -1,6 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
+// Actividades superpuestas al horario de grupo (DETALLAR) - el 'NO' Tiene mas puntaje que el 'SI'
 
+// 
+/* const rangosCantFamiliares = {
+  0: "Hasta 3 integrantes",
+  1: "4 a 7 integrantes",
+  2: "8 o màs integrantes",
+} */
 import {
   Card,
   Container,
@@ -45,7 +52,7 @@ interface IActividad {
   fecha_inicio: string;
   fecha_fin: string;
   estado: "Activa" | "Inactiva";
-  en_lista_espera: string;
+  en_lista_espera: string | number;
 }
 
 export interface IAlumno {
@@ -303,12 +310,12 @@ export default function AlumnoDetailPage({
                         <td>
                           <Badge
                             bg={
-                              act.en_lista_espera === "0"
+                              act.en_lista_espera === 0
                                 ? "success"
                                 : "warning"
                             }
                           >
-                            {act.en_lista_espera === "0"
+                            {act.en_lista_espera === 0
                               ? "Inscripto"
                               : "Lista de espera"}
                           </Badge>

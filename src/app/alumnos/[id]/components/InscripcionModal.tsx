@@ -19,7 +19,7 @@ export default function InscripcionModal({ show, onClose, alumno_id,setFlag }: P
   useEffect(() => {
     if (show) {
       const fetchActividades = async () => {
-        const res = await ActividadService.getAll({ limit: 100, offset: 0 });
+        const res = await ActividadService.getAll({ limit: 100, offset: 0,estado: "Activa" });
         const { data } = res;
         setActividades(data);
       };

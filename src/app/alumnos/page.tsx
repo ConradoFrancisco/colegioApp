@@ -77,10 +77,10 @@ export default function AlumnosPage() {
           <h2 className="mb-4">Listado de Alumnos</h2>
           <div className="">
             <button
-              className="btn btn-success"
+              className="btn btn-primary"
               onClick={() => setShowModal(true)}
             >
-              Añadir alumno
+              + Añadir alumno
             </button>
           </div>
         </div>
@@ -138,7 +138,6 @@ export default function AlumnosPage() {
         <Table striped bordered hover responsive>
           <thead>
             <tr>
-              <th>#</th>
               <th>Apellido</th>
               <th>Nombre</th>
               <th>Fecha de Nacimiento</th>
@@ -152,7 +151,6 @@ export default function AlumnosPage() {
           <tbody>
             {alumnos?.map((a, index) => (
               <tr key={index}>
-                <td>{a.id}</td>
                 <td>{a.apellido}</td>
                 <td>{a.nombre}</td>
                 <td>{a.fecha_nacimiento}</td>
