@@ -101,6 +101,64 @@ class AlumnosService {
       return {} as IAlumno;
     }
   }
+
+  public async subirDocumento(file: File, tipo: string, alumno_id: number) {
+    const formData = new FormData();
+    formData.append("archivo", file);
+    formData.append("tipo", tipo);
+    formData.append("alumno_id", alumno_id.toString());
+
+    try {
+      const response = await axios.post(
+        `${API_URL}?endpoint=documentacion/subir`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      toast.success(response.data.message);
+      return response.data;
+    } catch (e) {
+      console.log(e);
+      toast.error("Error al subir el documento");
+      return;
+    }
+  }
+  public async updatePrioridad({
+    alumno_id,
+    canastaBasica,
+    repitencia,
+    ingresosHogar,
+    frecuenciaEscuela,
+  }: {
+    alumno_id: number;
+    canastaBasica: number;
+    repitencia: number;
+    ingresosHogar: number;
+    frecuenciaEscuela: number;
+  }): Promise<[]> {
+    const data = {
+      canastaBasica,
+      repitencia,
+      ingresosHogar,
+      frecuenciaEscuela,
+    };
+    try {
+      const response = await axios.put(
+        `${API_URL}?endpoint=alumnos/updatePrioridad&id=${alumno_id}`,
+        data
+      );
+      toast.success("Respuestas guardadas correctamente");
+      console.log(response.data.message);
+      return response.data;
+    } catch (e) {
+      console.log(e);
+      toast.error("Error al crear el alumno");
+      return [];
+    }
+  }
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export

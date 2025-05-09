@@ -1,13 +1,8 @@
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-// Actividades superpuestas al horario de grupo (DETALLAR) - el 'NO' Tiene mas puntaje que el 'SI'
 
-// 
-/* const rangosCantFamiliares = {
-  0: "Hasta 3 integrantes",
-  1: "4 a 7 integrantes",
-  2: "8 o màs integrantes",
-} */
 import {
   Card,
   Container,
@@ -22,16 +17,18 @@ import { useEffect, useState } from "react";
 import FamiliarModal from "./components/FamiliarModal";
 import AlumnosService from "../../../../services/AlumnosService";
 import InscripcionModal from "./components/InscripcionModal";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import DocumentoModal from "./components/DocumentoModal";
+import { FaTrash } from "react-icons/fa";
 
-interface IDocumento {
+/* interface IDocumento {
   id: number;
   alumno_id: number;
   tipo: string;
   url: string;
   descripcion?: string;
 }
-
+ */
 interface IFamiliar {
   fechaNac: string;
   id: number;
@@ -40,6 +37,11 @@ interface IFamiliar {
   dni: string;
   telefono: string;
   parentesco: string;
+}
+interface IDocumentacion {
+  id: number;
+  tipo: string;
+  url: string;
 }
 
 interface IActividad {
@@ -52,7 +54,7 @@ interface IActividad {
   fecha_inicio: string;
   fecha_fin: string;
   estado: "Activa" | "Inactiva";
-  en_lista_espera: string | number;
+  en_lista_espera: string;
 }
 
 export interface IAlumno {
@@ -65,9 +67,14 @@ export interface IAlumno {
   barrio: string;
   socioEducativo: boolean;
   escuela: string;
+  anioEscolar: string;
+  ingresosHogar: number;
+  canastaBasica: number;
+  frecuenciaEscuela: number;
+  repitencia: number;
   familiares: IFamiliar[];
   actividades: IActividad[];
-  anioEscolar: string;
+  documentacion: IDocumentacion[];
 }
 
 export default function AlumnoDetailPage({
@@ -75,14 +82,32 @@ export default function AlumnoDetailPage({
 }: {
   params: { id: string };
 }) {
-
+  const [ingresosHogar, setIngresosHogar] = useState(0);
+const [canastaBasica, setCanastaBasica] = useState(0);
+const [frecuenciaEscuela, setFrecuenciaEscuela] = useState(0);
+const [repitencia, setRepitencia] = useState(0);
+  /* 
   const [documentos, setDocumentos] = useState<IDocumento[]>([]);
   const [showDocModal, setShowDocModal] = useState(false);
   const [docFile, setDocFile] = useState<File | null>(null);
   const [docTipo, setDocTipo] = useState("DNI");
+ */
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    try {
+      await AlumnosService.updatePrioridad({alumno_id: Number(params.id), canastaBasica, repitencia, ingresosHogar, frecuenciaEscuela});
+      
+      setFlag(f => f + 1);
+    } catch (error) {
+      toast.error("Error al guardar las respuestas");
+      console.error("Error al guardar la prioridad", error);
+    }
+  };
   // Simulación de un alumno
   const [showModal, setShowModal] = useState(false);
+  const [showDocModal, setShowDocModal] = useState(false);
   const [showFamiliarModal, setShowFamiliarModal] = useState(false);
   const [showInscripcionModal, setShowInscripcionModal] = useState(false);
   const [alumno, setAlumno] = useState<IAlumno | undefined>({
@@ -96,6 +121,18 @@ export default function AlumnoDetailPage({
     escuela: "Escuela N° 123",
     socioEducativo: true,
     anioEscolar: "5° grado",
+    documentacion: [
+      {
+        id: 1,
+        tipo: "DNI",
+        url: "https://example.com/dni.jpg",
+      },
+      {
+        id: 2,
+        tipo: "Certificado de nacimiento",
+        url: "https://example.com/certificado.jpg",
+      },
+    ],
 
     familiares: [
       {
@@ -128,6 +165,7 @@ export default function AlumnoDetailPage({
         fecha_inicio: "2024-03-01",
         fecha_fin: "2024-12-15",
         estado: "Activa",
+        en_lista_espera: "0",
       },
       {
         id: 2,
@@ -139,6 +177,7 @@ export default function AlumnoDetailPage({
         fecha_inicio: "2024-04-01",
         fecha_fin: "2024-11-30",
         estado: "Activa",
+        en_lista_espera: "1",
       },
     ],
   });
@@ -164,10 +203,18 @@ export default function AlumnoDetailPage({
     });
     setShowFamiliarModal(true);
   };
+
+
+
+  
   useEffect(() => {
     const getAlumno = async () => {
       const response = await AlumnosService.getById(params.id as string);
       setAlumno(response as IAlumno); // Assuming the first element is the desired alumno
+      setIngresosHogar(response.ingresosHogar);
+      setCanastaBasica(response.canastaBasica);
+      setFrecuenciaEscuela(response.frecuenciaEscuela);
+      setRepitencia(response.repitencia);
     };
     getAlumno();
   }, [flag]);
@@ -225,7 +272,7 @@ export default function AlumnoDetailPage({
           </Col>
         </Row>
 
-        <Accordion defaultActiveKey="0" className="mb-4">
+        <Accordion className="mb-4">
           <Accordion.Item eventKey="0">
             <Accordion.Header>Familiares</Accordion.Header>
             <Accordion.Body>
@@ -279,7 +326,7 @@ export default function AlumnoDetailPage({
           </Accordion.Item>
         </Accordion>
 
-        <Accordion defaultActiveKey="1" className="mb-4">
+        <Accordion className="mb-4">
           <Accordion.Item eventKey="1">
             <div>
               <Accordion.Header className="d-flex justify-content-between">
@@ -310,12 +357,12 @@ export default function AlumnoDetailPage({
                         <td>
                           <Badge
                             bg={
-                              act.en_lista_espera === 0
+                              act.en_lista_espera === "0"
                                 ? "success"
                                 : "warning"
                             }
                           >
-                            {act.en_lista_espera === 0
+                            {act.en_lista_espera === "0"
                               ? "Inscripto"
                               : "Lista de espera"}
                           </Badge>
@@ -344,12 +391,129 @@ export default function AlumnoDetailPage({
           <Accordion.Item eventKey="2">
             <Accordion.Header>Documentación adjunta</Accordion.Header>
             <Accordion.Body>
-              <p className="text-muted mb-3">
-                No hay documentación adjunta para este alumno.
-              </p>
-              <div className="d-flex justify-content-end">
-                <button className="btn btn-success">+ Adjuntar</button>
-              </div>
+              {alumno?.documentacion ? (
+                <Table striped bordered hover responsive>
+                  <thead>
+                    <tr>
+                      <th>Imagen</th>
+                      <th>Descripción</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {alumno?.documentacion.map((doc, index) => (
+                      <tr key={index}>
+                        <td>
+                          <img
+                            src={`${process.env.NEXT_PUBLIC_API_FILES}${doc.url}`}
+                            height={100}
+                            rel="noopener noreferrer"
+                          ></img>
+                        </td>
+                        <td>{doc.tipo}</td>
+                        <td>
+                          <button className="btn btn-danger w-100">
+                            <FaTrash />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              ) : (
+                <>
+                  <p className="text-muted mb-3">
+                    No hay documentación adjunta para este alumno.
+                  </p>
+                  <div className="d-flex justify-content-end"></div>
+                </>
+              )}
+              <button
+                className="btn btn-success"
+                onClick={() => setShowDocModal(true)}
+              >
+                + Adjuntar
+              </button>
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+        <Accordion className="my-4">
+          <Accordion.Item eventKey="3">
+            <Accordion.Header>Datos adicionales del alumno</Accordion.Header>
+            <Accordion.Body>
+              <form className="row g-3" onSubmit={handleSubmit}>
+                {/* Pregunta 1 */}
+                <div className="col-md-12">
+                  <label htmlFor="ingresosHogar"  className="form-label">
+                    ¿De dónde provienen los principales ingresos económicos del
+                    hogar?
+                  </label>
+                  <select id="ingresosHogar" value={ingresosHogar} onChange={(e) => setIngresosHogar(Number(e.target.value))} className="form-select">
+                    <option value={0}>
+                      Trabajo estable en relación de dependencia
+                    </option>
+                    <option value={1}>Trabajo informal estable</option>
+                    <option value={2}>
+                      Trabajo informal esporádico (changas)
+                    </option>
+                    <option value={3}>
+                      Asignaciones/pensiones/planes sociales
+                    </option>
+                    <option value={4}>Otros</option>
+                  </select>
+                </div>
+
+                {/* Pregunta 2 */}
+                <div className="col-md-12">
+                  <label htmlFor="canastaBasica" className="form-label">
+                    ¿Considerás que los ingresos familiares alcanzan para cubrir
+                    la canasta básica?
+                  </label>
+                  <select value={canastaBasica} onChange={(e) => setCanastaBasica(Number(e.target.value))} id="canastaBasica" className="form-select">
+                    <option value={0}>Sí</option>
+                    <option value={1}>No</option>
+                    <option value={2}>Parcialmente</option>
+                    <option value={3}>Muy poco</option>
+                  </select>
+                </div>
+
+                {/* Pregunta 3 */}
+                <div className="col-md-12">
+                  <label htmlFor="frecuenciaEscuela" className="form-label">
+                    ¿Cuántas veces a la semana asiste a la escuela?
+                  </label>
+                  <select value={frecuenciaEscuela} onChange={(e) => setFrecuenciaEscuela(Number(e.target.value))} id="frecuenciaEscuela" className="form-select">
+                    <option value={1}>
+                      Entre 4 y 5 veces por semana (Regular)
+                    </option>
+                    <option value={2}>
+                      Regular pero no permanece toda la jornada
+                    </option>
+                    <option value={3}>2 o 3 veces por semana</option>
+                    <option value={4}>Menos de 2 veces por semana</option>
+                    <option value={5}>No asiste</option>
+                  </select>
+                </div>
+
+                {/* Pregunta 4 */}
+                <div className="col-md-12">
+                  <label htmlFor="repitencia" className="form-label">
+                    ¿Tuvo que hacer permanencia en algún año escolar
+                    (repitencia)?
+                  </label>
+                  <select value={repitencia} onChange={(e) => setRepitencia(Number(e.target.value))} id="repitencia" className="form-select">
+                    <option value={0}>No</option>
+                    <option value={1}>Sí</option>
+                  </select>
+                </div>
+
+                {/* Botón de guardar */}
+                <div className="d-flex justify-content-end">
+                  <button type="submit" className="btn btn-primary mt-3">
+                    Guardar respuestas
+                  </button>
+                </div>
+              </form>
             </Accordion.Body>
           </Accordion.Item>
         </Accordion>
@@ -381,6 +545,12 @@ export default function AlumnoDetailPage({
             alumno_id={alumno?.id}
             show={showInscripcionModal}
             onClose={() => setShowInscripcionModal(false)}
+          />
+          <DocumentoModal
+            onClose={() => setShowDocModal(false)}
+            show={showDocModal}
+            alumno_id={alumno?.id}
+            setFlag={setFlag}
           />
         </>
       )}

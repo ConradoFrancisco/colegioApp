@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { Table, Container, Accordion } from "react-bootstrap";
+import { Table, Container, Accordion, Badge } from "react-bootstrap";
 import Link from "next/link";
 import AlumnosService from "../../../services/AlumnosService";
 import { useEffect, useState } from "react";
@@ -26,10 +26,13 @@ interface IAlumnoListado {
   socio_educativo: string;
   last_modified: string | null;
   preinscripcion: string;
-  contacto: string;
+  contacto?: string;
+  prioridad: number;
 }
 
 export default function AlumnosPage() {
+  const [ordenCampo, setOrdenCampo] = useState("apellido");
+const [ordenDireccion, setOrdenDireccion] = useState<"ASC" | "DESC">("ASC");
   const [alumnos, setAlumnos] = useState<IAlumnoListado[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [limit, setLimit] = useState(4);
@@ -57,19 +60,20 @@ export default function AlumnosPage() {
     }
   };
   const getAlumnos = async () => {
-      const response: { cant: number; data: IAlumnoListado[] } = await AlumnosService.getAlumnos({
+    const response: { cant: number; data: IAlumnoListado[] } =
+      await AlumnosService.getAlumnos({
         busqueda,
         barrio,
         limit, // o el número que quieras
         offset, // más adelante podés hacer paginación real
       });
-      setTotal(response.cant); // o 'total' si cambiaste eso en el backend
-      setAlumnos(response.data);
-    };
+    setTotal(response.cant); // o 'total' si cambiaste eso en el backend
+    setAlumnos(response.data);
+  };
 
   useEffect(() => {
     getAlumnos();
-  }, [limit,offset]);
+  }, [limit, offset]);
   return (
     <>
       <Container fluid className="my-4">
@@ -87,7 +91,9 @@ export default function AlumnosPage() {
         <div className="row">
           <Accordion defaultActiveKey="0" className="mb-3">
             <Accordion.Item eventKey="0">
-              <Accordion.Header><LuFilter size={20}/> {' '} Filtros</Accordion.Header>
+              <Accordion.Header>
+                <LuFilter size={20} /> Filtros
+              </Accordion.Header>
               <Accordion.Body>
                 <div className="row">
                   <div className="col-md-6 mb-3">
@@ -114,7 +120,7 @@ export default function AlumnosPage() {
                       onClick={() => {
                         getAlumnos();
                         setOffset(0); // limpia y vuelve a pedir todo
-                      } }
+                      }}
                     >
                       Buscar
                     </button>
@@ -123,8 +129,8 @@ export default function AlumnosPage() {
                       onClick={() => {
                         setBusqueda("");
                         setBarrio("");
-                        getAlumnos()
-                        setOffset(0) // limpia y vuelve a pedir todo
+                        getAlumnos();
+                        setOffset(0); // limpia y vuelve a pedir todo
                       }}
                     >
                       Limpiar
@@ -145,6 +151,7 @@ export default function AlumnosPage() {
               <th>Barrio</th>
               <th>Dirección</th>
               <th>Escuela</th>
+              <th>prioridad</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -158,6 +165,19 @@ export default function AlumnosPage() {
                 <td>{a.barrio}</td>
                 <td>{a.direccion}</td>
                 <td>{a.escuela}</td>
+                <td>
+                  {a.prioridad === 0 ? (
+                    <Badge bg="black">No asignada </Badge>
+                  ) : a.prioridad >= 10 ? (
+                    <Badge bg="danger">Alta </Badge>
+                  ) : a.prioridad >= 7 ? (
+                    <Badge bg="warning">Media</Badge>
+                  ) : a.prioridad >= 4 ? (
+                    <Badge bg="warning">Media baja </Badge>
+                  ) : (
+                    <Badge bg="success">Baja </Badge>
+                  )}
+                </td>
                 <td>
                   <Link
                     href={`/alumnos/${a.id}`}
@@ -175,7 +195,6 @@ export default function AlumnosPage() {
           limit={limit}
           offset={offset}
           setOffset={setOffset}
-          
         />
       </Container>
       <AlumnoModal
